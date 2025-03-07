@@ -5,6 +5,7 @@ WanderLust is a simple MERN travel blog website ✈ This project is aimed to hel
 ![Preview Image](https://github.com/krishnaacharyaa/wanderlust/assets/116620586/17ba9da6-225f-481d-87c0-5d5a010a9538)
 
 ## [Figma Design File](https://www.figma.com/file/zqNcWGGKBo5Q2TwwVgR6G5/WanderLust--A-Travel-Blog-App?type=design&node-id=0%3A1&mode=design&t=c4oCG8N1Fjf7pxTt-1)
+
 ## [Discord Channel](https://discord.gg/FEKasAdCrG)
 
 ## 🎯 Goal of this project
@@ -95,12 +96,127 @@ _I'd love for you to make the most of this project - it's all about learning, he
    npm run dev
    ```
 
+# 🚀 Deploying Wanderlust with Docker (Without Docker Compose)
+
+## 🛠 Step 1: Create a Docker Network
+
+**Before deploying the containers, create a dedicated Docker network:**
+
+```bash
+docker network create wanderlust
+```
+
+## 🏗 Step 2: Build and Run the Frontend
+
+**Navigate to the Frontend Directory:**
+
+```bash
+cd frontend/
+```
+
+**Configure Environment Variables:**
+If running on an AWS EC2 instance, update the API path in .env.sample:
+
+```bash
+nano .env.sample
+```
+
+**Update the following line with your EC2 instance's public IP:**
+
+```bash
+VITE_API_PATH=http://<EC2_PUBLIC_IP>:5000
+```
+
+**Build the Frontend Docker Image:**
+
+```bash
+docker build -t frontend .
+```
+
+**Run the Frontend Container:**
+
+```bash
+docker run -d --name frontend --network wanderlust -p 5173:5173 frontend
+```
+
+## 🗄 Step 3: Deploy MongoDB
+
+**Run the MongoDB Container:**
+
+```bash
+docker run -d --name mongodb --network wanderlust -p 27017:27017 mongo
+```
+
+**Copy Sample Data into MongoDB Container:**
+
+```bash
+docker cp backend/data/sample_posts.json mongodb:/data/sample_posts.json
+```
+
+**Import Data into MongoDB:**
+
+```bash
+docker exec -it mongodb bash
+mongoimport --db wanderlust --collection posts --file /data/sample_posts.json --jsonArray
+```
+
+## 🔧 Step 4: Build and Run the Backend
+
+**Navigate to the Backend Directory:**
+
+```bash
+cd backend/
+```
+
+**Configure Backend Environment Variables:**
+
+```bash
+nano .env.sample
+```
+
+**Update the following lines:**
+
+```bash
+MONGODB_URI=mongodb://mongodb/wanderlust
+CORS_ORIGIN=http://<EC2_PUBLIC_IP>:5173
+```
+
+**Build the Backend Docker Image:**
+
+```bash
+docker build -t backend .
+```
+
+**Run the Backend Container:**
+
+```bash
+docker run -d --name backend --network wanderlust -p 5000:5000 backend
+```
+
+# 🌍 Accessing the Application
+
+**Once all containers are running, you can access the application in your browser:**
+
+```bash
+http://<EC2_PUBLIC_IP>:5173
+```
+
+## 🏁 Summary of Running Containers
+
+**Check running containers with:**
+
+```bash
+docker ps
+```
+
+## If any container fails, check logs
+
+```bash
+docker logs <container_name>
+```
+
+## Your Wanderlust travel blog is now successfully deployed using Docker! 🎉
+
 ## 🌟 Ready to Contribute?
 
 Kindly go through [CONTRIBUTING.md](https://github.com/krishnaacharyaa/wanderlust/blob/main/.github/CONTRIBUTING.md) to understand everything from setup to contributing guidelines.
-
-## 💖 Show Your Support
-
-If you find this project interesting and inspiring, please consider showing your support by starring it on GitHub! Your star goes a long way in helping me reach more developers and encourages me to keep enhancing the project.
-
-🚀 Feel free to get in touch with me for any further queries or support, happy to help :)
