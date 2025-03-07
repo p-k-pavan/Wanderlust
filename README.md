@@ -100,7 +100,7 @@ _I'd love for you to make the most of this project - it's all about learning, he
 
 ## 🛠 Step 1: Create a Docker Network
 
-**Before deploying the containers, create a dedicated Docker network:**
+**1. Before deploying the containers, create a dedicated Docker network:**
 
 ```bash
 docker network create wanderlust
@@ -108,114 +108,149 @@ docker network create wanderlust
 
 ## 🏗 Step 2: Build and Run the Frontend
 
-**Navigate to the Frontend Directory:**
+**1. Navigate to the Frontend Directory:**
 
-```bash
-cd frontend/
-```
+     ```bash
+     cd frontend/
+     ```
 
-**Configure Environment Variables:**
+**2. Configure Environment Variables:**
 If running on an AWS EC2 instance, update the API path in .env.sample:
 
-```bash
-nano .env.sample
-```
+     ```bash
+     nano .env.sample
+     ```
 
-**Update the following line with your EC2 instance's public IP:**
+**3. Update the following line with your EC2 instance's public IP:**
 
-```bash
-VITE_API_PATH=http://<EC2_PUBLIC_IP>:5000
-```
+     ```bash
+     VITE_API_PATH=http://<EC2_PUBLIC_IP>:5000
+     ```
 
-**Build the Frontend Docker Image:**
+**4. Build the Frontend Docker Image:**
 
-```bash
-docker build -t frontend .
-```
+     ```bash
+     docker build -t frontend .
+     ```
 
-**Run the Frontend Container:**
+**5. Run the Frontend Container:**
 
-```bash
-docker run -d --name frontend --network wanderlust -p 5173:5173 frontend
-```
+     ```bash
+     docker run -d --name frontend --network wanderlust -p 5173:5173 frontend
+     ```
 
 ## 🗄 Step 3: Deploy MongoDB
 
-**Run the MongoDB Container:**
+**1. Run the MongoDB Container:**
 
-```bash
-docker run -d --name mongodb --network wanderlust -p 27017:27017 mongo
-```
+     ```bash
+     docker run -d --name mongodb --network wanderlust -p 27017:27017 mongo
+     ```
 
-**Copy Sample Data into MongoDB Container:**
+**2. Copy Sample Data into MongoDB Container:**
 
-```bash
-docker cp backend/data/sample_posts.json mongodb:/data/sample_posts.json
-```
+     ```bash
+     docker cp backend/data/sample_posts.json mongodb:/data/sample_posts.json
+     ```
 
-**Import Data into MongoDB:**
+**3. Import Data into MongoDB:**
 
-```bash
-docker exec -it mongodb bash
-mongoimport --db wanderlust --collection posts --file /data/sample_posts.json --jsonArray
-```
+     ```bash
+     docker exec -it mongodb bash
+     mongoimport --db wanderlust --collection posts --file /data/sample_posts.json --jsonArray
+     ```
 
 ## 🔧 Step 4: Build and Run the Backend
 
-**Navigate to the Backend Directory:**
+**1. Navigate to the Backend Directory:**
 
-```bash
-cd backend/
-```
+     ```bash
+     cd backend/
+     ```
 
-**Configure Backend Environment Variables:**
+**2. Configure Backend Environment Variables:**
 
-```bash
-nano .env.sample
-```
+     ```bash
+     nano .env.sample
+     ```
 
-**Update the following lines:**
+**3. Update the following lines:**
 
-```bash
-MONGODB_URI=mongodb://mongodb/wanderlust
-CORS_ORIGIN=http://<EC2_PUBLIC_IP>:5173
-```
+     ```bash
+     MONGODB_URI=mongodb://mongodb/wanderlust
+     CORS_ORIGIN=http://<EC2_PUBLIC_IP>:5173
+     ```
 
-**Build the Backend Docker Image:**
+**4. Build the Backend Docker Image:**
 
-```bash
-docker build -t backend .
-```
+     ```bash
+     docker build -t backend .
+     ```
 
-**Run the Backend Container:**
+**5. Run the Backend Container:**
 
-```bash
-docker run -d --name backend --network wanderlust -p 5000:5000 backend
-```
+     ```bash
+     docker run -d --name backend --network wanderlust -p 5000:5000 backend
+     ```
 
 # 🌍 Accessing the Application
 
 **Once all containers are running, you can access the application in your browser:**
 
-```bash
-http://<EC2_PUBLIC_IP>:5173
-```
+    ```bash
+    http://<EC2_PUBLIC_IP>:5173
+    ```
 
 ## 🏁 Summary of Running Containers
 
 **Check running containers with:**
 
-```bash
-docker ps
-```
+    ```bash
+    docker ps
+    ```
 
 ## If any container fails, check logs
 
-```bash
-docker logs <container_name>
-```
+    ```bash
+    docker logs <container_name>
+    ```
 
 ## Your Wanderlust travel blog is now successfully deployed using Docker! 🎉
+
+## 📌 Setting Up Wanderlust with Docker Compose
+
+**1 Run the Application**
+    ```bash
+    docker-compose up -d --build
+    ```
+
+**2. Verify Running Containers**
+     ```bash
+     docker ps
+     ```
+
+# 🌍 Accessing the Application
+
+**Once all containers are running, you can access the application in your browser:**
+
+    ```bash
+    http://<EC2_PUBLIC_IP>:5173
+    ```
+
+## 🛑 Stopping & Removing Containers
+
+**Stop all running containers**
+     ```bash
+     docker-compose down
+     ```
+
+**Stop and remove standalone containers**
+
+     ```bash
+     docker stop frontend backend mongodb
+     docker rm frontend backend mongodb
+     docker network rm wanderlust
+     ```
 
 ## 🌟 Ready to Contribute?
 
